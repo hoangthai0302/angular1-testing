@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Expressions</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", []).controller("defaultCtrl", function ($scope,$parse,$interpolate,$compile) {
+            $scope.name = 'Manish';
+           
+            //$parse
+            $scope.parse = $parse('name')($scope);
+            $parse('name').assign($scope,'Prakash');
+            $scope.parse_assign = $parse('name')($scope);
+             
+            $scope.button_text = 'click me';
+            $scope.clickme = function(){
+                alert('clicked');
+            }
+            //$interpolate
+            var html = '<button ng-click="clickme();">{{button_text}}</button';
+            $scope.interpolate = $interpolate(html)($scope);
+            
+
+            //$compile
+            $scope.compile = $compile(html)($scope);
+
+            //get into the dom        
+            var div = document.getElementById('test');
+            //convert dom element to angular element
+            div = angular.element(div);
+            div.append($scope.compile);
+
+
+
+            
+
+
+               
+       });
+    </script>
+</head>
+
+<body ng-controller="defaultCtrl">
+    <div>
+        <div>Parse: {{parse}} - {{parse_assign}}</div>
+        <div>Interpolate: {{interpolate}}</div>
+        <div id='test'></div>
+    </div>
+</body>
+</html

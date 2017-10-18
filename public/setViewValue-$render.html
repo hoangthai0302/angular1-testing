@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>CustomForms</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script type="text/ng-template" id="triTemplate">
+        <div class="well">
+            <div class="btn-group"> 
+                <button class="btn btn-default">Yes</button> 
+                <button class="btn btn-default">No</button> 
+                <button class="btn btn-default">Not Sure</button>                
+            </div>
+        </div>
+    </script>
+    <script>
+        angular.module("exampleApp", [])
+        .controller("defaultCtrl", function ($scope) {
+            $scope.dataValue = "Not Sure";
+        }).directive("triButton", function () {
+            return {
+                restrict: "E",
+                replace: true,
+                require: "ngModel",
+                template: document.querySelector("#triTemplate").outerText,
+                link: function (scope, element, attrs, ctrl) {
+                    element.on("click", function (event) {
+                        setSelected(event.target.innerText);
+                        
+                        scope.$apply(function () {
+                            //ham $setViewValue se ko trigger ham $render
+                            //khi ham nay duoc goi, gia tri moi se duoc
+                            //xu ly boi $parsers va $validators pipes
+                            //cuoi cung se duoc apply vao $modelvalue 
+                            //khi do gia tri bien $scope.dataValue se duoc update
+                            //dan toi thay doi tat ca UI
+                            //chu y: ko co ham $setModelValue
+                            //va viec set truc tiep ctrl.$viewValue, ctrl.$modelValue = .. cung ko co tac dung
+                            ctrl.$setViewValue(event.target.innerText);
+                            console.log(ctrl);
+                        });
+                    });
+
+
+                    var setSelected = function (value) {
+                        console.log('setSelected func called')
+                        var buttons = element.find("button");
+                        buttons.removeClass("btn-primary");
+                        for (var i = 0; i < buttons.length; i++) {
+                            if (buttons.eq(i).text() == value) {
+                                buttons.eq(i).addClass("btn-primary");
+                            }
+                        }
+                    }
+
+                    //ham render duoc goi moi khi dataValue thay doi
+                    ctrl.$render = function () {
+                        console.log('$render func called')
+                        setSelected(ctrl.$viewValue || "Not Sure");
+                    }
+
+                }
+            }
+        });
+    </script>
+</head>
+
+<body ng-controller="defaultCtrl">
+    <div>
+        <tri-button ng-model="dataValue" />
+    </div>
+    <div class="well"> Value:
+        <select ng-model="dataValue">
+            <option>Yes</option>                
+            <option>No</option>                
+            <option>Not Sure</option>            
+        </select>
+    </div>
+    <p>{{dataValue}}</p>
+</body>
+
+</html>

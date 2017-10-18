@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Directives</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", []).controller("defaultCtrl", function ($scope, $sce) {
+
+                $scope.title = "Hello, Angm-Generator!";
+                $scope.content = [{
+                    "type": "image",
+                    "title": "Black Label Society",
+                    "src": "https://upload.wikimedia.org/wikipedia/en/b/bd/Sonic_Brew_ Original_Cover.jpg",
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+                }, {
+                    "type": "video",
+                    "title": "The One Motorcycle Video",
+                    "src": "http://player.vimeo.com/video/60049452"
+                }, {
+                    "type": "text",
+                    "title": "Hunter S. Thompson, Hell's Angels: A Strange and Terrible Saga",
+                    "src": "The Edge... There is no honest way to explain it because the only people who really know where it is are the ones who have gone over."
+                }, {
+                    "type": "image",
+                    "title": "Chrome Division",
+                    "src": "https://upload.wikimedia.org/wikipedia/en/e/e8/Booze%2C_ Broads_%26_Beelzebub_-_Chrome_Division.jpg",
+                    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
+                }];
+
+
+
+                //ko co doan nay, url se bi block va vang loi  
+                //Nhung vi da cau hinh $sceDelegateProvider ben duoi nen ko can doan nay nua
+                // angular.forEach($scope.content, function (item) {
+                //     item.src = $sce.trustAsResourceUrl(item.src);
+                // })
+
+
+            })
+            .config([ '$httpProvider',
+                '$sceDelegateProvider',
+                function ( $httpProvider,
+                    $sceDelegateProvider) {
+                    // Allow working on localhost or to avoid the video don't    work properly  
+                    $sceDelegateProvider.resourceUrlWhitelist(['self', '**']);
+                    // $locationProvider.hashPrefix('!');
+                    // This is required for Browser Sync to work properly
+                    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+                    // $urlRouterProvider.otherwise('/');
+                }
+            ])
+
+            .directive('contentItem', function ($compile) {
+                var imageTpl =
+                    '<div class="media"><div class="media-left"><a href="{{content.src}}"><img class="media-object img-thumbnail" ng-src="{{content.src}}" alt="content.title"></a></div><div class="media-body"><h2    class="media-heading">{{content.title}}</h2>   <p>{{content.description}}</p></div></div>';
+                var videoTpl =
+                    '<div class="entry-video"><h2>{{content.title}}</h2><div class="entry-vid"><iframe ng-src="{{content.src}}" width="100%" height="300" frameborder="0" webkitAllowFullScreen    mozallowfullscreen allowFullScreen></iframe></div><div    class="entry-text"><div class="text-justify">{{content.description}}</div></div></div>';
+                var textTpl =
+                    '<div class="panel panel-default"><div class="panel-body"><h1>{{content.title}}</h1><p class="lead">{{content.src}}</p></div></div>';
+                var getTemplate = function (type) {
+                    var template = '';
+                    switch (type) {
+                        case 'image':
+                            template = imageTpl;
+                            break;
+                        case 'video':
+                            template = videoTpl;
+                            break;
+                        case 'text':
+                            template = textTpl;
+                            break;
+                    }
+                    console.log('called')
+                    return template;
+                }
+                var linkF = function (scope, element, attrs) {
+                    element.html(getTemplate(scope.content.type));
+
+                    $compile(element.contents())(scope);
+                }
+                return {
+                    restrict: "E",
+                    link: linkF,
+                    scope: {
+                        content: '='
+                    }
+                };
+            });
+    </script>
+</head>
+
+<body>
+    <div class="container" ng-controller="defaultCtrl">
+        <div class="splash text-center">
+            <h1>{{ title }}</h1>
+            <p>This is a template for a simple home screen website. Use it as a starting point to create something more unique.</p>
+            <hr> </div> <br>
+        <div class="row">
+            <content-item ng-repeat="item in content" content="item"></content-item>
+        </div>
+
+</body>
+
+</html>

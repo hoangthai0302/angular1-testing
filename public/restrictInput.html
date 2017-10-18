@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Directives</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", []).controller("defaultCtrl", function ($scope, $location) {
+
+            $scope.message = "Tap Me!";
+
+        }).directive("positiveNumber", function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attrs, ngModel) {
+                    var view_value;
+                    console.log('remember link function called only once')
+                    ngModel.$parsers.push(function (value) {
+                        console.log('$parsers called')
+                        var return_value;
+
+                        var reg = /^\d*$/;
+
+                        if (!reg.test(value)) {
+                            return_value = view_value;
+                            ngModel.$setViewValue(view_value);
+                            ngModel.$render();
+                            ngModel.$setValidity('is_valid', false);
+                        } else {
+
+                            return_value = value;
+                            view_value = return_value;
+                            ngModel.$setValidity('is_valid', true);
+                        }
+
+
+
+                        return return_value;
+                    });
+                }
+            }
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
+        <input type="text" ng-model="message" positive-number>
+    </div>
+</body>
+
+</html>

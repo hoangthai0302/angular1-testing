@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Expressions</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", [])
+        .controller("defaultCtrl", function ($scope) {
+        }).directive('vectorText', function ($document) {
+
+            return {
+                template: '<span>{{ heading }}</span>',
+                link: function (scope, el, attrs) {
+                    // initialize the css      
+                    el.css({
+                        'float': 'left',
+                        'padding': attrs.buffer + "px"
+                    });
+                    // initialize the scope variable      
+                    scope.heading = '';
+                    // set event listener and handler      
+                    $document.on('mousemove', function (event) {
+                        // mousemove event does not start $digest,        
+                        // scope.$apply does this manually        
+                        scope.$apply(function () {
+                            if (event.pageY < 300) {
+                                scope.heading = 'N';
+                            } else {
+                                scope.heading = 'S';
+                            }
+                            if (event.pageX < 300) {
+                                scope.heading += 'W';
+                            } else {
+                                scope.heading += 'E';
+                            }
+                        });
+                    });
+                }
+            };
+        });
+    </script>
+</head>
+
+<body ng-controller="defaultCtrl">
+    <div buffer="300" vector-text> </div>
+</body>
+</html

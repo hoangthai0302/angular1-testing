@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Expressions</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", []).controller("defaultCtrl", function ($scope, $parse, $interpolate, $compile) {
+            $scope.click = function(){
+                alert();
+            }
+
+        }).directive('handleClick', ['$parse', function ($parse) {
+            return {
+                compile: function (element, attr) {
+
+                    var fn = $parse(attr['handleClick']);
+                    return function (scope, element, attr) {
+                        element.on('click', function (event) {
+                            scope.$apply(function () {
+                                fn(scope, {
+                                    $event: event
+                                });
+                            });
+                        });
+                    };
+                }
+            };
+        }]);
+    </script>
+</head>
+
+<body ng-controller="defaultCtrl">
+    <div>
+        <button handle-click="click()">Click me</button>
+    </div>
+</body>
+</html

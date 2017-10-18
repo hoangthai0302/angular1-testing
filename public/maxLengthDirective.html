@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html ng-app="exampleApp">
+
+<head>
+    <title>Directives</title>
+    <script src="angular.js"></script>
+    <link href="bootstrap.css" rel="stylesheet" />
+    <link href="bootstrap-theme.css" rel="stylesheet" />
+    <script>
+        angular.module("exampleApp", []).controller("defaultCtrl", function ($scope, $location) {
+
+            $scope.message = "Tap Me!";
+
+        }).directive("maxLength", function () {
+            return {
+                require: 'ngModel',
+                link: function (scope, elem, attrs, ngModel) {
+
+                    if (!ngModel) return;
+
+                    var maxLength = +attrs['maxLength'];
+
+                    ngModel.$parsers.unshift(function (viewValue) {
+                        if (viewValue && viewValue.length > maxLength) {
+                            var currentValue = ngModel.$modelValue;
+                            ngModel.$setViewValue(currentValue);
+                            ngModel.$render();
+                            return currentValue;
+                        } else {
+                            return viewValue;
+                        }
+                    });
+
+                }
+            }
+
+        });
+    </script>
+</head>
+
+<body>
+    <div id="todoPanel" class="panel" ng-controller="defaultCtrl">
+        <input type="text" ng-model="message" max-length='5'>
+    </div>
+</body>
+
+</html>
